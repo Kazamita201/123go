@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>1 2 3 GO</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: black;
+      color: white;
+      text-align: center;
+    }
+
+    /* Fondo estrellas */
+    body::before {
+      content: "";
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(white 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 40px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      margin: 20px;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .blue { background: blue; color: white; }
+    .green { background: green; color: white; }
+    .purple { background: purple; color: white; }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🌌 1 2 3 GO 🌌</h1>
+<p id="level">Nivel: Rookie | XP: 0</p>
+
+<div class="card">
+  <h2>💬 Practice</h2>
+  <input id="input" placeholder="Speak or type in English">
+  <br>
+  <button class="blue" onclick="send()">Send</button>
+  <button class="green" onclick="voice()">🎤 Speak</button>
+  <p id="response"></p>
+</div>
+
+<div class="card">
+  <h2>⚽ Reto</h2>
+  <p>Describe your best goal in English</p>
+  <button class="purple" onclick="xpUp(20)">Complete</button>
+</div>
+
+<p>© 2026 Jesus Mateo</p>
+
+<script>
+let xp = 0;
+let level = "Rookie";
+
+function send() {
+  let msg = document.getElementById("input").value;
+  if(msg === "") return;
+  
+  document.getElementById("response").innerText = "Nice! Keep going 🔥";
+  xpUp(10);
+}
+
+function xpUp(points) {
+  xp += points;
+
+  if(xp > 50) level = "Pro";
+  if(xp > 100) level = "Legend";
+
+  document.getElementById("level").innerText = 
+    "Nivel: " + level + " | XP: " + xp;
+}
+
+function voice() {
+  let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    document.getElementById("input").value = event.results[0][0].transcript;
+  }
+}
+</script>
+
+</body>
+</html>
