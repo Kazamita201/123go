@@ -115,3 +115,115 @@ function voice() {
 
 </body>
 </html>
+let streak = 0;
+
+function saveAll(){
+ localStorage.setItem("xp", xp);
+ localStorage.setItem("streak", streak);
+}
+
+function loadAll(){
+ let sXP = localStorage.getItem("xp");
+ let sStreak = localStorage.getItem("streak");
+
+ if(sXP) xp = parseInt(sXP);
+ if(sStreak) streak = parseInt(sStreak);
+
+ updateLevel();
+}
+
+function xpUp(p){
+ xp += p;
+ streak++;
+ updateLevel();
+ saveAll();
+}
+
+loadAll();let lesson = 1;
+
+function nextLesson(){
+ lesson++;
+
+ let lessons = [
+  "Say: I play football",
+  "Say: I scored a goal",
+  "Describe your last match",
+  "Talk about your favorite player"
+ ];
+
+ document.getElementById("challengeText").innerText = lessons[lesson % lessons.length];
+ xpUp(20);
+}function aiReply(msg){
+ msg = msg.toLowerCase();
+
+ if(msg.includes("i goed")){
+   return "❌ Say: I went (past tense)";
+ }
+
+ if(msg.includes("he go")){
+   return "❌ Say: He goes";
+ }
+
+ if(msg.includes("goal")){
+   return "⚽ Better: I scored a great goal";
+ }
+
+ if(msg.split(" ").length < 5){
+   return "⚠️ Make longer sentences";
+ }
+
+ return "🔥 Good English! You're improving!";
+}function startConversation(){
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+ if(!SpeechRecognition){
+   alert("No voice support");
+   return;
+ }
+
+ const rec = new SpeechRecognition();
+ rec.lang = "en-US";
+
+ rec.start();
+
+ rec.onresult = (e) => {
+   let text = e.results[0][0].transcript;
+   document.getElementById("input").value = text;
+
+   let reply = aiReply(text);
+   document.getElementById("response").innerText = reply;
+
+   speak(reply);
+   xpUp(20);
+ };
+}<div style="width:80%;background:#333;margin:auto;border-radius:10px;">
+  <div id="bar" style="height:20px;width:0%;background:lime;border-radius:10px;"></div>
+</div>function updateBar(){
+ let percent = (xp % 100) ;
+ document.getElementById("bar").style.width = percent + "%";
+}function xpUp(p){
+ xp += p;
+ updateLevel();
+ updateBar();
+ saveAll();
+}function saveScore(name, xp){
+ let scores = JSON.parse(localStorage.getItem("ranking")) || [];
+
+ scores.push({name: name, xp: xp});
+
+ scores.sort((a,b) => b.xp - a.xp);
+
+ scores = scores.slice(0, 5); // top 5
+
+ localStorage.setItem("ranking", JSON.stringify(scores));
+}function showRanking(){
+ let scores = JSON.parse(localStorage.getItem("ranking")) || [];
+ let text = "🏆 TOP PLAYERS:\n";
+
+ scores.forEach((s, i) => {
+   text += `${i+1}. ${s.name} - ${s.xp} XP\n`;
+ });
+
+ alert(text);
+}<button onclick="saveScore(prompt('Tu nombre:'), xp)">Guardar Score</button>
+<button onclick="showRanking()">Ver Ranking 🏆</button>
